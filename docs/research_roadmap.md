@@ -1,0 +1,169 @@
+# Research Roadmap
+
+This roadmap defines gates that must be passed in order. Implementation should not outrun the research freeze.
+
+## Gate 0 - Research Freeze
+
+Acceptance:
+
+- `docs/literature_map.md` is complete enough to guide implementation without overclaiming novelty.
+- `docs/research_gap.md` explicitly states established prior work, non-novelty claims, research questions, and falsifiable hypotheses.
+- `docs/research_roadmap.md` defines the execution gates.
+- `docs/decision_log.md` records initial decisions and revisit conditions.
+- Benchmark assumptions requiring validation are identified before implementation consumes them.
+
+Status in this branch: proposed for v0.1 review.
+
+## Gate 1 - Benchmark Freeze
+
+Corresponds to GitHub Issue #1: Define bracket benchmark.
+
+Freeze:
+
+- Bracket geometry.
+- Coordinate system.
+- Mounting configuration.
+- Load application.
+- Material.
+- Build orientation.
+- Design variables.
+- Parameter bounds.
+- FEA constraints.
+- DfAM constraints.
+- Objective function.
+- Evidence required for PASS/FAIL.
+
+The current `configs/bracket_default.yaml` values are provisional. Gate 1 must justify or revise them before CAD/CAE implementation relies on them.
+
+Values requiring justification:
+
+- PLA material choice.
+- Density, Young's modulus, Poisson's ratio, and yield strength.
+- 150 N load magnitude and load direction.
+- Fixed mounting face and two-hole mounting assumption.
+- Thickness, width, rib-height, fillet-radius, and hole-diameter bounds.
+- Maximum von Mises stress threshold.
+- Maximum displacement threshold.
+- 120 g mass limit.
+- Minimum wall-thickness threshold.
+- 45 degree overhang threshold.
+- Support-required boolean/proxy interpretation.
+- 20-iteration default budget and random seed conventions.
+
+## Gate 2 - Deterministic CAD-CAE PoC
+
+Scope:
+
+```text
+parameters -> FreeCAD -> STEP -> Gmsh -> CalculiX -> parsed stress/displacement/mass
+```
+
+Rules:
+
+- No LLM.
+- No DfAM scoring beyond geometry fields needed for the PoC.
+- Record deterministic artifact paths and structured failure reasons.
+- Keep backend adapters replaceable.
+
+## Gate 3 - Deterministic Closed Loop + DfAM
+
+Add:
+
+- Geometry validity.
+- Overhang measurement.
+- Minimum wall-thickness measurement.
+- Support requirement or support proxy.
+- Explicit build orientation.
+- A deterministic rule-based update loop.
+
+Rules:
+
+- Implement the deterministic rule-based loop before the LLM agent.
+- DfAM validity must be measured by deterministic criteria, not by subjective LLM judgment.
+
+## Gate 4 - Baselines
+
+At minimum:
+
+- Random search.
+- Rule-based search.
+- One stronger conventional optimizer if feasible, such as Bayesian optimization or a genetic algorithm.
+
+Rules:
+
+- All methods must use the same evaluation budget.
+- Failure rates count against the method that produced them.
+- Baselines must be runnable without an LLM provider.
+
+## Gate 5 - LLM Agent
+
+LLM input:
+
+- Natural-language requirement.
+- Current parameters.
+- Deterministic feedback.
+- Iteration history in an explicitly defined bounded format.
+
+LLM output:
+
+- Strict structured JSON parameters only.
+
+Rules:
+
+- Do not allow arbitrary generated CAD code in the core experiment.
+- Validate every proposal before CAD generation.
+- Log invalid proposals, retries, and token/API cost when available.
+
+## Gate 6 - Experiments
+
+Measure:
+
+- Feasible-design rate.
+- Iterations/evaluations to first feasible design.
+- Best feasible objective.
+- Final mass.
+- Maximum von Mises stress.
+- Displacement.
+- DfAM manufacturability metrics.
+- Invalid proposal rate.
+- CAD failure rate.
+- Meshing failure rate.
+- FEA failure rate.
+- Token/API cost if useful.
+
+Rules:
+
+- Use repeated trials.
+- Fix or log randomized seeds.
+- Preserve raw CSVs, configuration hashes, backend versions, and artifact manifests.
+- Write final Results only after reproducible evidence exists.
+
+## Gate 7 - Ablation
+
+Compare:
+
+- No feedback or minimal feedback.
+- Physics feedback only.
+- DfAM feedback only.
+- Physics plus DfAM feedback.
+
+Optional:
+
+- Sensitivity to LLM model choice.
+- Sensitivity to feedback-window length.
+- Sensitivity to objective weighting.
+
+Rules:
+
+- Do not tune ablations on final comparison outputs.
+- Report null or negative LLM results.
+
+## Gate 8 - Paper Package
+
+Acceptance:
+
+- Final result tables are produced from preserved raw outputs.
+- Figures are reproducible from scripts or documented generation steps.
+- `paper/references.bib` contains verified metadata for cited work.
+- Limitations distinguish benchmark scope, backend sensitivity, DfAM proxy limits, and LLM prompt/model sensitivity.
+- The repository can reproduce the pure Python checks and document the heavier CAD/CAE environment requirements.
