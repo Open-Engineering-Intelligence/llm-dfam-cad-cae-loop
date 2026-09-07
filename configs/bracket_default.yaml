@@ -1,0 +1,39 @@
+benchmark:
+  name: bracket_v1
+  description: Cantilever or mounting bracket benchmark for the first closed-loop experiment.
+
+material:
+  name: PLA
+  density_kg_m3: 1240
+  youngs_modulus_mpa: 3500
+  poissons_ratio: 0.36
+  yield_strength_mpa: 55
+
+load:
+  type: tip_force
+  magnitude_n: 150
+  direction: [0, -1, 0]
+
+boundary_condition:
+  type: fixed_mounting_face
+  mounting_hole_count: 2
+
+parameter_bounds:
+  thickness_mm: [3.0, 12.0]
+  width_mm: [20.0, 80.0]
+  rib_height_mm: [0.0, 40.0]
+  fillet_radius_mm: [0.5, 8.0]
+  hole_diameter_mm: [4.0, 16.0]
+
+constraints:
+  max_von_mises_mpa: 35.0
+  max_displacement_mm: 2.0
+  max_mass_g: 120.0
+  min_wall_thickness_mm: 2.4
+  max_overhang_angle_deg: 45.0
+  support_required: false
+
+experiment:
+  max_iterations: 20
+  random_seed: 20260907
+  result_format: csv

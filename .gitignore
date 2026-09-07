@@ -1,0 +1,35 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Local experiment products
+outputs/cad/*
+outputs/mesh/*
+outputs/fea/*
+outputs/figures/*
+outputs/logs/*
+!outputs/**/.gitkeep
+
+# CAD/CAE generated artifacts
+*.FCStd
+*.step
+*.stp
+*.stl
+*.inp
+*.frd
+*.vtk
+*.msh
+
+# Local secrets and machine-specific configuration
+.env
+.env.*
+*.local.yaml
+*.local.json
