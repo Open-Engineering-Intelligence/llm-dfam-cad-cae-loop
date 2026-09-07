@@ -49,9 +49,10 @@ The first benchmark is a cantilever or mounting bracket with a small parameter s
 - `width`
 - `rib_height`
 - `fillet_radius`
-- `hole_diameter`
 
 Initial constraints include maximum von Mises stress, maximum displacement, mass, minimum wall thickness, maximum overhang angle, and a support requirement proxy.
+
+Benchmark v1 is frozen in `docs/benchmark_bracket_v1.md`, with an analytical reference check in `docs/benchmark_sanity_check.md`.
 
 ## Current Status
 

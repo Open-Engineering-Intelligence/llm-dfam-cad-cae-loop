@@ -46,7 +46,6 @@ The first phase uses structured JSON-compatible parameters as the only design-ac
 - `width_mm`
 - `rib_height_mm`
 - `fillet_radius_mm`
-- `hole_diameter_mm`
 
 ## Constraints
 

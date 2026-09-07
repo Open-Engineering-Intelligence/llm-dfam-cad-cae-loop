@@ -71,3 +71,52 @@ This log records research and architecture decisions that affect reproducibility
 - Reason: The project must be able to conclude that the LLM does not outperform conventional optimization.
 - Alternatives considered: Comparing only LLM variants or only rule-based search.
 - Revisit condition: Revisit the exact optimizer choice at Gate 4, but not the requirement for at least one non-LLM baseline family.
+
+## 2026-09-07 - Freeze Benchmark Bracket v1 as a fixed-face cantilever bracket
+
+- Decision: Benchmark v1 is a fixed rear-face cantilever bracket with a rectangular arm, fixed base block, centered triangular rib, and deterministic fillets.
+- Reason: This gives a simple numerical engineering optimization problem with reliable future CAD generation, cheap static FEA, and a beam-equation sanity check.
+- Alternatives considered: L-brackets with bolt holes, complex mounting brackets, assemblies, and topology-optimized brackets.
+- Revisit condition: Revisit only if Issue #2 shows the geometry cannot be generated or meshed robustly.
+
+## 2026-09-07 - Exclude modeled bolt holes from Benchmark v1
+
+- Decision: Benchmark v1 models zero bolt holes; mounting is represented by an ideal fixed rear face.
+- Reason: Bolt holes, preload, contact, washers, and bearing stress would add modeling choices that are not needed for the first proposal-policy benchmark.
+- Alternatives considered: Keeping `hole_diameter_mm` as a design variable and modeling a two-hole mounting pattern.
+- Revisit condition: Add holes only in a later benchmark after the fixed-face bracket loop is reproducible.
+
+## 2026-09-07 - Freeze four design variables for Benchmark v1
+
+- Decision: The frozen design variables are `thickness_mm`, `width_mm`, `rib_height_mm`, and `fillet_radius_mm`.
+- Reason: A four-dimensional design space is expressive enough for mass/stiffness/stress tradeoffs while remaining tractable for random, rule-based, conventional, and LLM proposal policies.
+- Alternatives considered: Including `hole_diameter_mm`, rib thickness, arm length, base dimensions, and build orientation as variables.
+- Revisit condition: Revisit after Gate 6 if sensitivity results show a variable is non-identifiable or a missing variable is necessary.
+
+## 2026-09-07 - Use a PLA-like isotropic numerical material model
+
+- Decision: Benchmark v1 uses a PLA-like isotropic reference polymer with density `1240 kg/m3`, Young's modulus `3250 MPa`, Poisson's ratio `0.36`, and yield reference `52.5 MPa`.
+- Reason: The first paper needs a deterministic numerical benchmark, not a full anisotropic FDM material-calibration study.
+- Alternatives considered: Generic isotropic polymer, vendor-specific calibrated FDM PLA, PETG, and orthotropic printed-material modeling.
+- Revisit condition: Replace with calibrated orthotropic or printer-specific material data only after the first benchmark loop is stable.
+
+## 2026-09-07 - Define Benchmark v1 as mass minimization with feasibility constraints
+
+- Decision: The primary objective is minimize mass, subject to frozen structural, DfAM, geometry, and execution constraints.
+- Reason: A constrained objective avoids arbitrary weighted scores and makes optimizer comparison clearer.
+- Alternatives considered: Weighted aggregate score over mass, stress, displacement, and manufacturability.
+- Revisit condition: Multi-objective or weighted-score variants may be added after the primary constrained benchmark is reproducible.
+
+## 2026-09-07 - Freeze deterministic FDM/DfAM support proxy
+
+- Decision: Benchmark v1 uses build direction `(0, 0, 1)`, minimum wall/feature thickness `2.4 mm`, and a support proxy based on unsupported exterior regions where `n dot -b > cos(45 deg)` and connected area is at least `25 mm2`.
+- Reason: This converts the common overhang heuristic into a deterministic geometry condition without relying on subjective LLM judgment.
+- Alternatives considered: Slicer-generated support volume, print experiments, bridge-aware rules, and LLM manufacturability critique.
+- Revisit condition: Revisit after deterministic DfAM implementation or physical calibration shows the proxy is misleading.
+
+## 2026-09-07 - Freeze initial evaluation budget at 30 expensive evaluations
+
+- Decision: Each policy gets 30 expensive CAD/CAE/DfAM evaluations in the first comparison protocol; schema-invalid LLM retries are logged separately.
+- Reason: The budget is small enough for early CAD/CAE iteration while giving random and conventional baselines more room than the provisional 20-iteration value.
+- Alternatives considered: Keeping 20 evaluations, freezing repeated-trial count now, or making the budget method-specific.
+- Revisit condition: Gate 2 runtime measurements may require adjusting the budget before Gate 6, with the change documented as an amendment.

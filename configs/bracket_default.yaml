@@ -1,39 +1,74 @@
 benchmark:
   name: bracket_v1
-  description: Cantilever or mounting bracket benchmark for the first closed-loop experiment.
+  description: Frozen Gate 1 cantilever mounting bracket benchmark.
+  normative_spec: docs/benchmark_bracket_v1.md
+  sanity_check: docs/benchmark_sanity_check.md
+
+geometry:
+  coordinate_system:
+    x: span direction from fixed rear face to loaded free end
+    y: bracket width direction
+    z: build direction and vertical bending direction
+    origin: center of fixed rear face at the bottom edge of the arm
+  fixed_dimensions_mm:
+    span_length: 100.0
+    base_depth_x: 8.0
+    base_width_y: 70.0
+    base_height_z: 70.0
+    load_pad_length_x: 10.0
+    rib_thickness_y: 6.0
+  modeled_mounting_holes: false
+  bolt_contact_model: excluded
 
 material:
-  name: PLA
+  name: PLA-like isotropic reference polymer
   density_kg_m3: 1240
-  youngs_modulus_mpa: 3500
+  youngs_modulus_mpa: 3250
   poissons_ratio: 0.36
-  yield_strength_mpa: 55
+  yield_strength_mpa: 52.5
+  model_scope: numerical benchmark material, not a predictive model of arbitrary FDM PLA
 
 load:
   type: tip_force
   magnitude_n: 150
-  direction: [0, -1, 0]
+  direction: [0, 0, -1]
+  application_region:
+    x_mm: [98.0, 108.0]
+    y: full current bracket width
+    z: top arm surface
 
 boundary_condition:
-  type: fixed_mounting_face
-  mounting_hole_count: 2
+  type: fixed_rear_face
+  fixed_surface: x = 0 rear face of base block
+  modeled_mounting_hole_count: 0
+  excluded_effects:
+    - bolt preload
+    - nonlinear contact
+    - dynamics
+    - CFD
 
 parameter_bounds:
-  thickness_mm: [3.0, 12.0]
-  width_mm: [20.0, 80.0]
-  rib_height_mm: [0.0, 40.0]
-  fillet_radius_mm: [0.5, 8.0]
-  hole_diameter_mm: [4.0, 16.0]
+  thickness_mm: [4.0, 14.0]
+  width_mm: [30.0, 80.0]
+  rib_height_mm: [0.0, 35.0]
+  fillet_radius_mm: [1.0, 8.0]
 
 constraints:
-  max_von_mises_mpa: 35.0
+  max_von_mises_mpa: 25.0
   max_displacement_mm: 2.0
-  max_mass_g: 120.0
+  objective: minimize_mass_g
   min_wall_thickness_mm: 2.4
   max_overhang_angle_deg: 45.0
   support_required: false
+  support_proxy:
+    build_direction: [0, 0, 1]
+    max_unsupported_downward_normal_alignment: 0.70710678118
+    min_unsupported_region_area_mm2: 25.0
+    bridge_features: excluded
+    enclosed_cavities: excluded
 
 experiment:
-  max_iterations: 20
+  evaluation_budget_per_policy: 30
   random_seed: 20260907
   result_format: csv
+  repeated_trial_count: not_frozen

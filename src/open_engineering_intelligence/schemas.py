@@ -20,7 +20,6 @@ class DesignParameters(StrictRecord):
     width_mm: float = Field(gt=0)
     rib_height_mm: float = Field(ge=0)
     fillet_radius_mm: float = Field(gt=0)
-    hole_diameter_mm: float = Field(gt=0)
 
 
 class SimulationResult(StrictRecord):
