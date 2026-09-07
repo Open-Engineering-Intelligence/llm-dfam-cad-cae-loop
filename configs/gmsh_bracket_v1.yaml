@@ -1,0 +1,12 @@
+meshing:
+  backend: gmsh
+  dimension: 3
+  element_order: 1
+  algorithm_2d: 1
+  algorithm_3d: 1
+  characteristic_length_min_mm: 4.0
+  characteristic_length_max_mm: 8.0
+  num_threads: 1
+  random_factor: 1.0e-9
+  msh_file_version: 4.1
+  binary: false

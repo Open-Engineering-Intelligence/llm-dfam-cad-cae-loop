@@ -18,6 +18,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+cae = [
+  "gmsh==4.15.2"
+]
 dev = [
   "pytest>=8.0",
   "ruff>=0.6"
