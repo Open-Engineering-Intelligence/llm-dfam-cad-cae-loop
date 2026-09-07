@@ -25,7 +25,17 @@ class BracketV1Dimensions:
     rib_thickness_y: float = 6.0
 
 
+@dataclass(frozen=True)
+class TessellationSettings:
+    """Fixed STL tessellation settings for deterministic Benchmark v1 exports."""
+
+    linear_deflection_mm: float = 0.1
+    angular_deflection_rad: float = 0.174533
+    relative: bool = False
+
+
 BRACKET_V1_DIMENSIONS = BracketV1Dimensions()
+STL_TESSELLATION_SETTINGS = TessellationSettings()
 
 
 def load_bracket_v1_dimensions(config_path: Path) -> BracketV1Dimensions:
@@ -48,11 +58,16 @@ def load_bracket_v1_dimensions(config_path: Path) -> BracketV1Dimensions:
 class FreeCADBracketBackend:
     """Generate Benchmark Bracket v1 CAD artifacts from structured parameters."""
 
-    def __init__(self, dimensions: BracketV1Dimensions = BRACKET_V1_DIMENSIONS) -> None:
+    def __init__(
+        self,
+        dimensions: BracketV1Dimensions = BRACKET_V1_DIMENSIONS,
+        tessellation: TessellationSettings = STL_TESSELLATION_SETTINGS,
+    ) -> None:
         self.dimensions = dimensions
+        self.tessellation = tessellation
 
     def generate(self, parameters: Any, output_dir: Path) -> dict[str, Path]:
-        freecad, part = _freecad_modules()
+        freecad, part, mesh_part = _freecad_modules()
         params = _coerce_parameters(parameters)
         _validate_against_benchmark(params, self.dimensions)
 
@@ -60,6 +75,7 @@ class FreeCADBracketBackend:
         output_dir.mkdir(parents=True, exist_ok=True)
         doc_path = output_dir / "bracket_v1.FCStd"
         step_path = output_dir / "bracket_v1.step"
+        stl_path = output_dir / "bracket_v1.stl"
         manifest_path = output_dir / "bracket_v1_manifest.json"
 
         doc = freecad.newDocument("BracketV1")
@@ -73,8 +89,20 @@ class FreeCADBracketBackend:
             doc.recompute()
             doc.saveAs(str(doc_path))
             part.export([obj], str(step_path))
+            mesh = mesh_part.meshFromShape(
+                Shape=shape,
+                LinearDeflection=self.tessellation.linear_deflection_mm,
+                AngularDeflection=self.tessellation.angular_deflection_rad,
+                Relative=self.tessellation.relative,
+            )
+            mesh.write(str(stl_path))
 
-            manifest = _manifest(shape, params, self.dimensions)
+            artifact_paths = {
+                "freecad_document": doc_path,
+                "step": step_path,
+                "stl": stl_path,
+            }
+            manifest = _manifest(shape, params, self.dimensions, self.tessellation, artifact_paths)
             manifest_path.write_text(
                 json.dumps(manifest, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
@@ -85,19 +113,21 @@ class FreeCADBracketBackend:
         return {
             "freecad_document": doc_path,
             "step": step_path,
+            "stl": stl_path,
             "manifest": manifest_path,
         }
 
 
-def _freecad_modules() -> tuple[Any, Any]:
+def _freecad_modules() -> tuple[Any, Any, Any]:
     try:
         import FreeCAD  # type: ignore[import-not-found]
+        import MeshPart  # type: ignore[import-not-found]
         import Part  # type: ignore[import-not-found]
     except ImportError as exc:
         raise RuntimeError(
             "FreeCAD Python modules are required. Run this backend with FreeCADCmd."
         ) from exc
-    return FreeCAD, Part
+    return FreeCAD, Part, MeshPart
 
 
 def _coerce_parameters(parameters: Any) -> dict[str, float]:
@@ -228,6 +258,8 @@ def _manifest(
     shape: Any,
     params: dict[str, float],
     dimensions: BracketV1Dimensions,
+    tessellation: TessellationSettings,
+    artifact_paths: dict[str, Path],
 ) -> dict[str, Any]:
     bbox = shape.BoundBox
     center = _center_point(shape)
@@ -254,8 +286,18 @@ def _manifest(
         "shape_valid": bool(shape.isValid()),
         "parameters": {key: _rounded(value) for key, value in params.items()},
         "dimensions": asdict(dimensions),
+        "artifact_paths": {key: path.name for key, path in artifact_paths.items()},
+        "artifact_file_sizes_bytes": {
+            key: path.stat().st_size for key, path in artifact_paths.items()
+        },
+        "cad_fingerprint": fingerprint,
         "geometry_fingerprint": fingerprint,
-        "artifacts": ["bracket_v1.FCStd", "bracket_v1.step"],
+        "tessellation": {
+            "linear_deflection_mm": _rounded(tessellation.linear_deflection_mm),
+            "angular_deflection_rad": _rounded(tessellation.angular_deflection_rad),
+            "relative": tessellation.relative,
+        },
+        "artifacts": ["bracket_v1.FCStd", "bracket_v1.step", "bracket_v1.stl"],
         "notes": [
             "FreeCAD PoC applies deterministic root and rib junction fillets.",
             "No Gmsh, CalculiX, FEA, DfAM evaluation, LLM, or optimization is run.",

@@ -42,6 +42,7 @@ from pathlib import Path
 sys.path.insert(0, {str(repo_root / "src")!r})
 
 import Part
+import Mesh
 
 from open_engineering_intelligence.cad.freecad_backend import FreeCADBracketBackend
 from open_engineering_intelligence.schemas import DesignParameters
@@ -72,6 +73,10 @@ def step_is_valid(artifacts):
     shape = Part.read(str(artifacts["step"]))
     return shape.isValid() and shape.Volume > 0
 
+def stl_triangle_count(artifacts):
+    mesh = Mesh.Mesh(str(artifacts["stl"]))
+    return mesh.CountFacets
+
 print(json.dumps({{
     "first": {{k: str(v) for k, v in first.items()}},
     "second": {{k: str(v) for k, v in second.items()}},
@@ -82,6 +87,9 @@ print(json.dumps({{
     "first_step_valid": step_is_valid(first),
     "second_step_valid": step_is_valid(second),
     "third_step_valid": step_is_valid(third),
+    "first_stl_triangle_count": stl_triangle_count(first),
+    "second_stl_triangle_count": stl_triangle_count(second),
+    "third_stl_triangle_count": stl_triangle_count(third),
 }}, sort_keys=True))
 """,
         encoding="utf-8",
@@ -105,15 +113,34 @@ print(json.dumps({{
         artifacts = result[run_key]
         assert Path(artifacts["freecad_document"]).is_file()
         assert Path(artifacts["step"]).is_file()
+        assert Path(artifacts["stl"]).is_file()
         assert Path(artifacts["manifest"]).is_file()
         assert Path(artifacts["step"]).stat().st_size > 1000
+        assert Path(artifacts["stl"]).stat().st_size > 1000
         assert result[f"{run_key}_manifest"]["shape_valid"] is True
         assert result[f"{run_key}_step_valid"] is True
+        assert result[f"{run_key}_stl_triangle_count"] > 0
+
+        manifest = result[f"{run_key}_manifest"]
+        artifact_paths = manifest["artifact_paths"]
+        artifact_sizes = manifest["artifact_file_sizes_bytes"]
+        assert artifact_paths["step"] == "bracket_v1.step"
+        assert artifact_paths["stl"] == "bracket_v1.stl"
+        assert artifact_sizes["step"] == Path(artifacts["step"]).stat().st_size
+        assert artifact_sizes["stl"] == Path(artifacts["stl"]).stat().st_size
+        assert "cad_fingerprint" in manifest
+        assert manifest["cad_fingerprint"] == manifest["geometry_fingerprint"]
+        assert manifest["tessellation"] == {
+            "angular_deflection_rad": 0.174533,
+            "linear_deflection_mm": 0.1,
+            "relative": False,
+        }
 
     assert (
         result["first_manifest"]["geometry_fingerprint"]
         == result["second_manifest"]["geometry_fingerprint"]
     )
+    assert result["first_manifest"]["tessellation"] == result["second_manifest"]["tessellation"]
     assert (
         result["first_manifest"]["geometry_fingerprint"]
         != result["third_manifest"]["geometry_fingerprint"]
