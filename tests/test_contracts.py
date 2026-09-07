@@ -28,7 +28,6 @@ def test_design_parameters_are_numeric_and_positive() -> None:
         width_mm=42.0,
         rib_height_mm=18.0,
         fillet_radius_mm=3.0,
-        hole_diameter_mm=8.0,
     )
 
     assert params.model_dump() == {
@@ -36,7 +35,6 @@ def test_design_parameters_are_numeric_and_positive() -> None:
         "width_mm": 42.0,
         "rib_height_mm": 18.0,
         "fillet_radius_mm": 3.0,
-        "hole_diameter_mm": 8.0,
     }
 
 
@@ -47,7 +45,6 @@ def test_design_parameters_reject_non_positive_core_dimensions() -> None:
             width_mm=42.0,
             rib_height_mm=18.0,
             fillet_radius_mm=3.0,
-            hole_diameter_mm=8.0,
         )
 
 
@@ -57,7 +54,6 @@ def test_iteration_record_preserves_structured_feedback() -> None:
         width_mm=42.0,
         rib_height_mm=18.0,
         fillet_radius_mm=3.0,
-        hole_diameter_mm=8.0,
     )
     simulation = SimulationResult(
         succeeded=True,
@@ -109,5 +105,6 @@ def test_default_bracket_config_contains_first_phase_constraints() -> None:
 
     assert config["benchmark"]["name"] == "bracket_v1"
     assert "thickness_mm" in config["parameter_bounds"]
+    assert "hole_diameter_mm" not in config["parameter_bounds"]
     assert config["constraints"]["max_von_mises_mpa"] > 0
     assert config["constraints"]["min_wall_thickness_mm"] > 0

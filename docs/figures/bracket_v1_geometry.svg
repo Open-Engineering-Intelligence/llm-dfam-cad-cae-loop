@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">Benchmark Bracket v1 dimensioned schematic</title>
+  <desc id="desc">Two-view schematic showing X span, Y width, Z build direction, fixed rear face, load pad, base block, cantilever arm, and triangular rib.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#202124" />
+    </marker>
+    <marker id="arrow-start" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M8,0 L0,3 L8,6 Z" fill="#202124" />
+    </marker>
+    <style>
+      text { font-family: Arial, sans-serif; fill: #202124; font-size: 16px; }
+      .small { font-size: 13px; }
+      .label { font-size: 15px; font-weight: 600; }
+      .part { fill: #d9e8fb; stroke: #285a8e; stroke-width: 2; }
+      .rib { fill: #f4d6a7; stroke: #9b5d08; stroke-width: 2; }
+      .load { stroke: #b3261e; stroke-width: 4; marker-end: url(#arrow); }
+      .dim { stroke: #202124; stroke-width: 1.5; marker-start: url(#arrow-start); marker-end: url(#arrow); }
+      .axis { stroke: #444746; stroke-width: 2; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 6 5; }
+    </style>
+  </defs>
+
+  <text x="40" y="40" class="label">Side view (X-Z)</text>
+  <rect x="90" y="170" width="64" height="280" class="part" />
+  <rect x="154" y="386" width="520" height="64" class="part" />
+  <polygon points="154,386 154,250 622,386" class="rib" />
+  <rect x="622" y="386" width="52" height="64" fill="#ccebd6" stroke="#2f7d46" stroke-width="2" />
+  <line x1="648" y1="330" x2="648" y2="382" class="load" />
+  <text x="660" y="350" class="small">F = 150 N, -Z</text>
+  <line x1="90" y1="458" x2="90" y2="120" stroke="#5f6368" stroke-width="4" />
+  <text x="38" y="150" class="small">fixed rear face x=0</text>
+  <line x1="154" y1="490" x2="674" y2="490" class="dim" />
+  <text x="365" y="520">span L = 100 mm</text>
+  <line x1="92" y1="116" x2="154" y2="116" class="dim" />
+  <text x="94" y="105" class="small">base depth 8 mm</text>
+  <line x1="704" y1="386" x2="704" y2="450" class="dim" />
+  <text x="718" y="424" class="small">thickness</text>
+  <line x1="142" y1="250" x2="142" y2="386" class="dim" />
+  <text x="52" y="325" class="small">rib height</text>
+  <line x1="622" y1="468" x2="674" y2="468" class="dim" />
+  <text x="606" y="486" class="small">load pad 10 mm</text>
+
+  <line x1="110" y1="85" x2="175" y2="85" class="axis" />
+  <text x="183" y="90">+X</text>
+  <line x1="110" y1="85" x2="110" y2="35" class="axis" />
+  <text x="120" y="43">+Z / build</text>
+
+  <text x="40" y="535" class="small">Not to scale. Normative dimensions are in docs/benchmark_bracket_v1.md and configs/bracket_default.yaml.</text>
+
+  <text x="560" y="40" class="label">Top view (X-Y)</text>
+  <rect x="590" y="105" width="70" height="180" class="part" />
+  <rect x="660" y="135" width="230" height="120" class="part" />
+  <rect x="660" y="185" width="230" height="20" class="rib" />
+  <rect x="870" y="135" width="20" height="120" fill="#ccebd6" stroke="#2f7d46" stroke-width="2" />
+  <line x1="900" y1="195" x2="930" y2="195" class="axis" />
+  <text x="935" y="200">+X</text>
+  <line x1="600" y1="195" x2="600" y2="145" class="axis" />
+  <text x="610" y="150">+Y</text>
+  <line x1="660" y1="310" x2="890" y2="310" class="dim" />
+  <text x="730" y="340">span L = 100 mm</text>
+  <line x1="910" y1="135" x2="910" y2="255" class="dim" />
+  <text x="820" y="285" class="small">width_mm</text>
+  <text x="675" y="180" class="small">center rib, fixed 6 mm thick</text>
+  <text x="604" y="95" class="small">base width 70 mm</text>
+</svg>
