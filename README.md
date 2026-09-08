@@ -43,28 +43,36 @@ Out of scope for the first phase:
 
 ## Initial Benchmark
 
-The first benchmark is a cantilever or mounting bracket with a small parameter set:
-
-- `thickness`
-- `width`
-- `rib_height`
-- `fillet_radius`
-
-Initial constraints include maximum von Mises stress, maximum displacement, mass, minimum wall thickness, maximum overhang angle, and a support requirement proxy.
-
-Benchmark v1 is frozen in `docs/benchmark_bracket_v1.md`, with an analytical reference check in `docs/benchmark_sanity_check.md`.
+Benchmark v1 is the frozen fixed-rear-face cantilever bracket defined in the
+[authoritative specification](docs/benchmark_bracket_v1.md). Use that specification
+and its [configuration](configs/bracket_default.yaml) for parameter names, bounds,
+mounting, material, loading, constraints, objective, and evaluation budget.
+The [analytical reference check](docs/benchmark_sanity_check.md) is a sanity check,
+not a replacement for deterministic CAD/CAE validation.
 
 ## Current Status
 
-This repository is in the first initialization phase. It contains the reproducible project structure, interface contracts, configuration schema, documentation skeleton, and CI for the pure Python layer. Full FreeCAD, Gmsh, and CalculiX automation are planned but intentionally not implemented in the first commit.
+At the mesh-pipeline baseline introduced by PR #35 (commit `5aca995`):
+
+- FreeCAD bracket generation produces a native document, STEP, STL, and a CAD
+  manifest with geometry fingerprint and tessellation metadata.
+- Gmsh consumes STEP plus the CAD manifest and produces a tetrahedral volume mesh
+  and mesh manifest; STL is not the meshing input.
+- Integration tests cover CAD artifact validation and repeated-input meshing.
+  Their presence is not a claim that they have passed in every environment.
+- CalculiX execution and structured physics results are not implemented. They are
+  the intended next PoC stage, subject to Issue #5 design review and authorization.
+
+Historical note: the initial commit contained only contracts, configuration,
+documentation, and pure Python CI. That initialization-only status is superseded
+by the CAD/export and meshing implementations above.
 
 ## Roadmap
 
-1. Deterministic CAD-CAE proof of concept for the bracket benchmark.
-2. Structured LLM design-agent proposals with strict output validation.
-3. DfAM validators for overhangs, wall thickness, and support proxy scoring.
-4. Repeated experimental evaluation against rule-based and random-search baselines.
-5. Paper-ready result tables, figures, ablations, and reproducibility package.
+Follow the [gated research roadmap](docs/research_roadmap.md): deterministic
+CAD-CAE PoC, deterministic closed loop and DfAM, non-LLM baselines, then the LLM
+proposal policy, experiments, ablations, and paper package. The roadmap is not
+permission to advance beyond the explicitly authorized task.
 
 ## Reproducibility
 
@@ -74,9 +82,14 @@ Run the pure Python checks:
 
 ```powershell
 python -m pip install -e .[dev]
-python -m pytest -q
+python -m pytest -q -m "not integration"
 ruff check .
 ```
+
+External integration tests are separate: `python -m pytest -q -m integration`.
+They require FreeCAD and, for meshing, the optional `cae` dependency extra.
+Missing tools cause explicit skips; skips do not demonstrate backend success.
+See [agent routing and validation scope](AGENTS.md) for task-specific checks.
 
 ## Repository Structure
 

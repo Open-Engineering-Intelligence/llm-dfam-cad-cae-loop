@@ -2,6 +2,11 @@
 
 This roadmap defines gates that must be passed in order. Implementation should not outrun the research freeze.
 
+For implementation status, see [README](../README.md#current-status). Frozen
+Benchmark v1 values are defined by the [normative specification](benchmark_bracket_v1.md)
+and its [configuration](../configs/bracket_default.yaml), not by historical
+planning notes in this roadmap. Gate descriptions do not authorize new work.
+
 ## Gate 0 - Research Freeze
 
 Acceptance:
@@ -12,7 +17,8 @@ Acceptance:
 - `docs/decision_log.md` records initial decisions and revisit conditions.
 - Benchmark assumptions requiring validation are identified before implementation consumes them.
 
-Status in this branch: proposed for v0.1 review.
+Historical status: this gate was originally proposed for v0.1 review. That entry
+describes the research-freeze proposal, not the current implementation status.
 
 ## Gate 1 - Benchmark Freeze
 
@@ -33,22 +39,19 @@ Freeze:
 - Objective function.
 - Evidence required for PASS/FAIL.
 
-The current `configs/bracket_default.yaml` values are provisional. Gate 1 must justify or revise them before CAD/CAE implementation relies on them.
+Benchmark v1 is frozen. Its mounting model, design variables, material and load,
+constraints, mass objective, and evaluation budget are authoritative in the
+[benchmark specification](benchmark_bracket_v1.md) and
+[configuration](../configs/bracket_default.yaml). The
+[sanity check](benchmark_sanity_check.md) and [decision log](decision_log.md)
+record justification and limitations. Do not reopen the freeze based on an older
+description here; changes require an explicitly authorized specification amendment.
 
-Values requiring justification:
-
-- PLA material choice.
-- Density, Young's modulus, Poisson's ratio, and yield strength.
-- 150 N load magnitude and load direction.
-- Fixed mounting face and two-hole mounting assumption.
-- Thickness, width, rib-height, fillet-radius, and hole-diameter bounds.
-- Maximum von Mises stress threshold.
-- Maximum displacement threshold.
-- 120 g mass limit.
-- Minimum wall-thickness threshold.
-- 45 degree overhang threshold.
-- Support-required boolean/proxy interpretation.
-- 20-iteration default budget and random seed conventions.
+Historical note (superseded pre-freeze checklist): the initial proposal considered
+two mounting holes, hole diameter as a variable, a 120 g mass limit, and a
+20-iteration budget. These are not active Benchmark v1 requirements. The
+specification and decision log record the adopted definitions; the earlier
+provisional-value checklist remains available in Git history.
 
 ## Gate 2 - Deterministic CAD-CAE PoC
 
@@ -57,6 +60,11 @@ Scope:
 ```text
 parameters -> FreeCAD -> STEP -> Gmsh -> CalculiX -> parsed stress/displacement/mass
 ```
+
+Implementation status at the PR #35 mesh baseline: CAD generation, CAD artifact
+export, and Gmsh meshing are implemented. CalculiX execution and parsed physics
+results remain planned; Gate 2 is not complete. Issue #5 requires its reviewed
+design and task-specific implementation authorization.
 
 Rules:
 
