@@ -1,0 +1,35 @@
+solver:
+  backend: calculix
+  target_version: "2.22"
+  case_name: bracket_v1_static
+  timeout_seconds: 120
+
+analysis:
+  type: linear_static
+  element_type: C3D4
+  geometric_nonlinearity: false
+
+units:
+  length: mm
+  force: N
+  stress: MPa
+
+material:
+  name: PLA_LIKE_ISOTROPIC_REFERENCE
+  youngs_modulus_mpa: 3250.0
+  poissons_ratio: 0.36
+  scope: numerical benchmark material, not a validated FDM PLA model
+
+boundary_condition:
+  node_set: FIXED_NODES
+  fixed_x_mm: 0.0
+  coordinate_tolerance_mm: 1.0e-6
+  constrained_dofs: [1, 2, 3]
+
+load:
+  node_set: LOAD_NODES
+  x_range_mm: [98.0, 108.0]
+  y_range_mm: [-25.0, 25.0]
+  z_mm: 8.0
+  total_force_n: [0.0, 0.0, -150.0]
+  distribution: equal_equivalent_nodal_loads
