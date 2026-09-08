@@ -2,14 +2,46 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 try:
-    from pydantic import BaseModel, ConfigDict, Field
+    from pydantic import BaseModel, ConfigDict, Field, model_validator
 except ImportError:  # pragma: no cover - exercised by FreeCAD's bundled Python.
     _PYDANTIC_AVAILABLE = False
 else:
     _PYDANTIC_AVAILABLE = True
+
+
+def _validate_simulation_state(
+    succeeded: bool,
+    max_von_mises_mpa: float | None,
+    max_displacement_mm: float | None,
+    mass_g: float | None,
+    failure_reason: str | None,
+) -> None:
+    metrics = (max_von_mises_mpa, max_displacement_mm, mass_g)
+    for value in metrics:
+        if value is not None and not math.isfinite(value):
+            raise ValueError("simulation metrics must be finite")
+    if max_von_mises_mpa is not None and max_von_mises_mpa < 0:
+        raise ValueError("max_von_mises_mpa must be non-negative")
+    if max_displacement_mm is not None and max_displacement_mm < 0:
+        raise ValueError("max_displacement_mm must be non-negative")
+    if mass_g is not None and mass_g <= 0:
+        raise ValueError("mass_g must be positive")
+
+    if succeeded:
+        if any(value is None for value in metrics):
+            raise ValueError("succeeded simulation requires all finite metrics")
+        if failure_reason is not None:
+            raise ValueError("succeeded simulation must not contain a failure_reason")
+        return
+
+    if any(value is not None for value in metrics):
+        raise ValueError("failed simulation must have null metrics")
+    if failure_reason is None or not failure_reason.strip():
+        raise ValueError("failed simulation requires a failure_reason")
 
 
 if _PYDANTIC_AVAILABLE:
@@ -32,11 +64,22 @@ if _PYDANTIC_AVAILABLE:
     class SimulationResult(StrictRecord):
         """Physics result parsed from deterministic CAE execution."""
 
-        succeeded: bool
-        max_von_mises_mpa: float | None = Field(default=None, ge=0)
-        max_displacement_mm: float | None = Field(default=None, ge=0)
-        mass_g: float | None = Field(default=None, ge=0)
+        succeeded: bool = Field(strict=True)
+        max_von_mises_mpa: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+        max_displacement_mm: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+        mass_g: float | None = Field(default=None, gt=0, allow_inf_nan=False)
         failure_reason: str | None = None
+
+        @model_validator(mode="after")
+        def validate_result_state(self) -> SimulationResult:
+            _validate_simulation_state(
+                self.succeeded,
+                self.max_von_mises_mpa,
+                self.max_displacement_mm,
+                self.mass_g,
+                self.failure_reason,
+            )
+            return self
 
 
     class ManufacturabilityResult(StrictRecord):
@@ -131,6 +174,38 @@ else:
             "mass_g",
             "failure_reason",
         )
+
+        def __init__(
+            self,
+            *,
+            succeeded: bool,
+            max_von_mises_mpa: float | None = None,
+            max_displacement_mm: float | None = None,
+            mass_g: float | None = None,
+            failure_reason: str | None = None,
+        ) -> None:
+            super().__init__(
+                succeeded=succeeded,
+                max_von_mises_mpa=max_von_mises_mpa,
+                max_displacement_mm=max_displacement_mm,
+                mass_g=mass_g,
+                failure_reason=failure_reason,
+            )
+
+        def _validate(self) -> None:
+            if not isinstance(self.succeeded, bool):
+                raise TypeError("succeeded must be a bool")
+            for name in ("max_von_mises_mpa", "max_displacement_mm", "mass_g"):
+                value = getattr(self, name)
+                if value is not None:
+                    object.__setattr__(self, name, float(value))
+            _validate_simulation_state(
+                self.succeeded,
+                self.max_von_mises_mpa,
+                self.max_displacement_mm,
+                self.mass_g,
+                self.failure_reason,
+            )
 
 
     class ManufacturabilityResult(StrictRecord):
