@@ -1,0 +1,13 @@
+initial_parameters:
+  thickness_mm: 8.0
+  width_mm: 50.0
+  rib_height_mm: 18.0
+  fillet_radius_mm: 2.0
+min_thickness_mm: 4.0
+max_thickness_mm: 14.0
+step_mm: 1.0
+stress_limit_mpa: 25.0
+displacement_limit_mm: 2.0
+density_g_mm3: 0.00124
+evaluation_budget: 30
+timeout_seconds: 300

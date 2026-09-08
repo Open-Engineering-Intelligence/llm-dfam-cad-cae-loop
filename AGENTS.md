@@ -26,9 +26,12 @@ DesignParameters -> FreeCAD -> CAD artifacts/manifest (STEP for meshing)
                  -> Gmsh -> mesh/manifest -> CalculiX -> structured physics result
 ```
 
-The PR #35 baseline implements CAD generation/export and Gmsh meshing. CalculiX
-and structured physics results are planned stages, not completed functionality.
-The roadmap describes dependencies, not authorization to start the next issue.
+The PR #36 baseline (merge `4109c991e3eac4315781cc2fb15001b56f165962`)
+implements CAD generation/export, Gmsh meshing, CalculiX static analysis, parsed
+physics results, and provenance. Gate 2 is complete. Issue #6 is the approved
+structural-only deterministic closed-loop task; DfAM remains unevaluated and
+Gate 3 remains incomplete. The roadmap describes dependencies, not authorization
+to start later issues.
 
 ## Scope and Invariants
 

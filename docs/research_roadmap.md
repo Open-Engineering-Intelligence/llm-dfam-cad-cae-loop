@@ -61,10 +61,11 @@ Scope:
 parameters -> FreeCAD -> STEP -> Gmsh -> CalculiX -> parsed stress/displacement/mass
 ```
 
-Implementation status at the PR #35 mesh baseline: CAD generation, CAD artifact
-export, and Gmsh meshing are implemented. CalculiX execution and parsed physics
-results remain planned; Gate 2 is not complete. Issue #5 requires its reviewed
-design and task-specific implementation authorization.
+Status: complete at the Issue #5 baseline merged by PR #36, commit
+`4109c991e3eac4315781cc2fb15001b56f165962`. CAD generation and export, Gmsh
+meshing, CalculiX static execution, parsed stress/displacement, structured
+failures, and provenance are implemented. Issue #6 accepts this baseline without
+re-review.
 
 Rules:
 
@@ -88,6 +89,13 @@ Rules:
 
 - Implement the deterministic rule-based loop before the LLM agent.
 - DfAM validity must be measured by deterministic criteria, not by subjective LLM judgment.
+
+Current Issue #6 scope implements only the deterministic structural
+`thickness_descent_v1` integration slice described in
+[the Issue #6 contract](issue6_deterministic_closed_loop.md). It records DfAM as
+`not_evaluated` and full benchmark feasibility as `null`; therefore Gate 3 remains
+incomplete. LLM policies, advanced optimizers, DfAM metrics, and mesh-convergence
+studies do not enter this issue.
 
 ## Gate 4 - Baselines
 

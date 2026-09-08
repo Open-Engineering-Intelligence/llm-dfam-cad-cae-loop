@@ -52,16 +52,20 @@ not a replacement for deterministic CAD/CAE validation.
 
 ## Current Status
 
-At the mesh-pipeline baseline introduced by PR #35 (commit `5aca995`):
+At the deterministic static-FEA baseline merged by PR #36 (commit
+`4109c991e3eac4315781cc2fb15001b56f165962`):
 
 - FreeCAD bracket generation produces a native document, STEP, STL, and a CAD
   manifest with geometry fingerprint and tessellation metadata.
 - Gmsh consumes STEP plus the CAD manifest and produces a tetrahedral volume mesh
   and mesh manifest; STL is not the meshing input.
-- Integration tests cover CAD artifact validation and repeated-input meshing.
-  Their presence is not a claim that they have passed in every environment.
-- CalculiX execution and structured physics results are not implemented. They are
-  the intended next PoC stage, subject to Issue #5 design review and authorization.
+- CalculiX 2.22 performs the frozen linear-static analysis and produces validated,
+  structured stress, displacement, reaction, artifact, and provenance records.
+- Integration tests cover the external CAD, mesh, and solver stages. Their
+  presence is not a claim that they have passed in every environment.
+- Gate 2 is complete. The approved Issue #6 task is the structural-only
+  [`thickness_descent_v1` closed loop](docs/issue6_deterministic_closed_loop.md).
+  It does not evaluate DfAM, complete Gate 3, or establish experimental results.
 
 Historical note: the initial commit contained only contracts, configuration,
 documentation, and pure Python CI. That initialization-only status is superseded
@@ -86,10 +90,18 @@ python -m pytest -q -m "not integration"
 ruff check .
 ```
 
-External integration tests are separate: `python -m pytest -q -m integration`.
-They require FreeCAD and, for meshing, the optional `cae` dependency extra.
-Missing tools cause explicit skips; skips do not demonstrate backend success.
+External integration tests are separate: install with
+`python -m pip install -e .[dev,cae]`, then run
+`python -m pytest -q -m integration`. They require FreeCAD, Gmsh, and CalculiX;
+`FREECAD_CMD` and `CALCULIX_CCX` can select existing executables. Missing tools
+cause explicit skips; skips do not demonstrate backend success.
 See [agent routing and validation scope](AGENTS.md) for task-specific checks.
+
+Issue #6 will expose a single-trial command, a three-trial serial experiment, and
+a retained-evidence verifier through
+`py -3.12 -m open_engineering_intelligence.pipeline.closed_loop`. The contract,
+artifact layout, tolerances, and claim limits are documented before implementation
+in the linked Issue #6 document.
 
 ## Repository Structure
 

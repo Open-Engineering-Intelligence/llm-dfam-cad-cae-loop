@@ -23,7 +23,7 @@ jobs:
         run: ruff check .
 
       - name: Unit tests
-        run: python -m pytest -q
+        run: python -m pytest -q -m "not integration"
 
       - name: Package import test
         run: python -c "import open_engineering_intelligence; print(open_engineering_intelligence.__version__)"
