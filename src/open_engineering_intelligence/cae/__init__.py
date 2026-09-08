@@ -1,5 +1,11 @@
 """CAE backend adapters."""
 
+from open_engineering_intelligence.cae.calculix_solver import (
+    CalculiXStaticConfig,
+    CalculiXStaticError,
+    CalculiXStaticSolver,
+    load_calculix_static_config,
+)
 from open_engineering_intelligence.cae.gmsh_mesher import (
     GmshMesher,
     GmshMeshingConfig,
@@ -8,6 +14,10 @@ from open_engineering_intelligence.cae.gmsh_mesher import (
 )
 
 __all__ = [
+    "CalculiXStaticConfig",
+    "CalculiXStaticError",
+    "CalculiXStaticSolver",
+    "load_calculix_static_config",
     "GmshMesher",
     "GmshMeshingConfig",
     "GmshMeshingError",
