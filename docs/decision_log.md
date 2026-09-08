@@ -120,3 +120,31 @@ This log records research and architecture decisions that affect reproducibility
 - Reason: The budget is small enough for early CAD/CAE iteration while giving random and conventional baselines more room than the provisional 20-iteration value.
 - Alternatives considered: Keeping 20 evaluations, freezing repeated-trial count now, or making the budget method-specific.
 - Revisit condition: Gate 2 runtime measurements may require adjusting the budget before Gate 6, with the change documented as an amendment.
+
+## 2026-09-08 - Use a frozen thickness-descent policy for Issue #6
+
+- Decision: The first closed-loop integration uses `thickness_descent_v1`, starting
+  at `(thickness, width, rib height, fillet) = (8, 50, 18, 2) mm`, decreasing
+  thickness by `1 mm` through `4 mm`, and stopping at the first structural failure.
+- Reason: A deterministic, bounded sequence isolates orchestration, evidence, and
+  repeatability from proposal-policy uncertainty.
+- Selection: Choose the lightest evaluated structurally feasible candidate by
+  `(mass_g, thickness_mm, iteration_index)`. An initially infeasible design yields
+  no feasible candidate. Backend and provenance failures remain run errors even
+  if an earlier feasible candidate exists.
+- Constraints: Compare unrounded integration-point von Mises stress and maximum
+  displacement using inclusive `25 MPa` and `2.0 mm` limits. Derive mass as CAD
+  volume times `0.00124 g/mm3`.
+- Budget and evidence: Preserve the 30-evaluation benchmark ceiling; this policy
+  uses at most five. Require three fresh serial, uncached trials, exact semantic
+  identities and mesh/input hashes, and the documented numeric tolerance.
+- Scope: DfAM remains `not_evaluated`, full benchmark feasibility remains `null`,
+  and Gate 3 is incomplete. Mass reduction is a separate hypothesis from software
+  correctness, but positive reduction in every accepted trial is required for
+  Issue #6 milestone PASS. No result is claimed before accepted retained evidence
+  exists.
+- Alternatives considered: adding an LLM, an advanced optimizer, DfAM scoring, or
+  a mesh-convergence study to the first loop integration.
+- Revisit condition: Do not tune this policy from observed results. Compare later
+  methods fairly under frozen controls and budget, and implement DfAM in a
+  separately reviewed Gate 3 task.

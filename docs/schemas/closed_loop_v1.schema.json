@@ -1,0 +1,610 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "description": "Content-addressed reference to a file below a run directory.",
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "ClosedLoopResult": {
+      "additionalProperties": false,
+      "description": "Terminal experiment result; DfAM remains explicitly unevaluated.",
+      "properties": {
+        "accepted_iteration": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accepted Iteration"
+        },
+        "accepted_mass_g": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accepted Mass G"
+        },
+        "accepted_parameters": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LoopParameters"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "best_feasible_iteration": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Best Feasible Iteration"
+        },
+        "controller": {
+          "const": "thickness_descent_v1",
+          "title": "Controller",
+          "type": "string"
+        },
+        "dfam_status": {
+          "const": "not_evaluated",
+          "title": "Dfam Status",
+          "type": "string"
+        },
+        "environment_manifest": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "evaluation_count": {
+          "minimum": 0,
+          "title": "Evaluation Count",
+          "type": "integer"
+        },
+        "experiment": {
+          "const": "bracket_v1_structural_thinning_v1",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "experiment_config": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "full_benchmark_feasible": {
+          "const": null,
+          "title": "Full Benchmark Feasible",
+          "type": "null"
+        },
+        "initial_mass_g": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Initial Mass G"
+        },
+        "iteration_manifests": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Iteration Manifests",
+          "type": "array"
+        },
+        "mass_reduction_fraction": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mass Reduction Fraction"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "no_feasible_design",
+            "budget_exhausted",
+            "error"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "termination_reason": {
+          "enum": [
+            "lower_bound_reached",
+            "structural_boundary_reached",
+            "initial_infeasible",
+            "budget_exhausted",
+            "evaluation_failed",
+            "invalid_proposal",
+            "provenance_mismatch"
+          ],
+          "title": "Termination Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "experiment",
+        "controller",
+        "status",
+        "termination_reason",
+        "experiment_config",
+        "environment_manifest",
+        "evaluation_count",
+        "iteration_manifests",
+        "best_feasible_iteration",
+        "accepted_iteration",
+        "accepted_parameters",
+        "initial_mass_g",
+        "accepted_mass_g",
+        "mass_reduction_fraction",
+        "dfam_status",
+        "full_benchmark_feasible"
+      ],
+      "title": "ClosedLoopResult",
+      "type": "object"
+    },
+    "ConstraintChecks": {
+      "additionalProperties": false,
+      "description": "Inclusive checks against the two frozen structural limits.",
+      "properties": {
+        "displacement_passed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Displacement Passed"
+        },
+        "stress_passed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stress Passed"
+        }
+      },
+      "required": [
+        "stress_passed",
+        "displacement_passed"
+      ],
+      "title": "ConstraintChecks",
+      "type": "object"
+    },
+    "ControllerDecision": {
+      "additionalProperties": false,
+      "description": "Persisted output from one invocation of the pure controller.",
+      "properties": {
+        "action": {
+          "enum": [
+            "decrease_thickness",
+            "stop"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "best_feasible_iteration": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Best Feasible Iteration"
+        },
+        "controller": {
+          "const": "thickness_descent_v1",
+          "title": "Controller",
+          "type": "string"
+        },
+        "current_evaluation": {
+          "enum": [
+            "feasible",
+            "infeasible",
+            "error"
+          ],
+          "title": "Current Evaluation",
+          "type": "string"
+        },
+        "input_parameters": {
+          "$ref": "#/$defs/LoopParameters"
+        },
+        "iteration": {
+          "minimum": 0,
+          "title": "Iteration",
+          "type": "integer"
+        },
+        "next_parameters": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LoopParameters"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "enum": [
+            "feasible_try_thinner",
+            "lower_bound_reached",
+            "structural_boundary_reached",
+            "initial_infeasible",
+            "budget_exhausted",
+            "evaluation_failed",
+            "invalid_proposal",
+            "provenance_mismatch"
+          ],
+          "title": "Reason",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "violated_constraints": {
+          "items": {
+            "enum": [
+              "max_von_mises_mpa",
+              "max_displacement_mm"
+            ],
+            "type": "string"
+          },
+          "title": "Violated Constraints",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "controller",
+        "iteration",
+        "input_parameters",
+        "current_evaluation",
+        "violated_constraints",
+        "action",
+        "reason",
+        "next_parameters",
+        "best_feasible_iteration"
+      ],
+      "title": "ControllerDecision",
+      "type": "object"
+    },
+    "Failure": {
+      "additionalProperties": false,
+      "description": "Machine-readable failure with a human-readable explanation.",
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "stage": {
+          "minLength": 1,
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "code",
+        "message"
+      ],
+      "title": "Failure",
+      "type": "object"
+    },
+    "IterationManifest": {
+      "additionalProperties": false,
+      "description": "Content-addressed manifest for a single evaluated iteration.",
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "cad_manifest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "constraint_checks": {
+          "$ref": "#/$defs/ConstraintChecks"
+        },
+        "decision": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "dfam_status": {
+          "const": "not_evaluated",
+          "title": "Dfam Status",
+          "type": "string"
+        },
+        "effective_analysis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluation_status": {
+          "enum": [
+            "completed",
+            "failed"
+          ],
+          "title": "Evaluation Status",
+          "type": "string"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Failure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "full_benchmark_feasible": {
+          "const": null,
+          "title": "Full Benchmark Feasible",
+          "type": "null"
+        },
+        "iteration": {
+          "minimum": 0,
+          "title": "Iteration",
+          "type": "integer"
+        },
+        "mesh_manifest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metrics": {
+          "$ref": "#/$defs/Metrics"
+        },
+        "parameters": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "physics_result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "previous_iteration_manifest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "structural_feasible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Structural Feasible"
+        },
+        "terminal": {
+          "title": "Terminal",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "iteration",
+        "previous_iteration_manifest",
+        "parameters",
+        "effective_analysis",
+        "evaluation_status",
+        "metrics",
+        "constraint_checks",
+        "structural_feasible",
+        "dfam_status",
+        "full_benchmark_feasible",
+        "cad_manifest",
+        "mesh_manifest",
+        "physics_result",
+        "decision",
+        "artifacts",
+        "failure",
+        "terminal"
+      ],
+      "title": "IterationManifest",
+      "type": "object"
+    },
+    "LoopParameters": {
+      "additionalProperties": false,
+      "description": "The four parameters understood by the frozen bracket backend.",
+      "properties": {
+        "fillet_radius_mm": {
+          "exclusiveMinimum": 0,
+          "title": "Fillet Radius Mm",
+          "type": "number"
+        },
+        "rib_height_mm": {
+          "minimum": 0,
+          "title": "Rib Height Mm",
+          "type": "number"
+        },
+        "thickness_mm": {
+          "exclusiveMinimum": 0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "width_mm": {
+          "exclusiveMinimum": 0,
+          "title": "Width Mm",
+          "type": "number"
+        }
+      },
+      "required": [
+        "thickness_mm",
+        "width_mm",
+        "rib_height_mm",
+        "fillet_radius_mm"
+      ],
+      "title": "LoopParameters",
+      "type": "object"
+    },
+    "Metrics": {
+      "additionalProperties": false,
+      "description": "Structural and objective metrics; nulls remain explicit on failed evaluations.",
+      "properties": {
+        "mass_g": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mass G"
+        },
+        "max_displacement_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Max Displacement Mm"
+        },
+        "max_von_mises_mpa": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Max Von Mises Mpa"
+        },
+        "volume_mm3": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Volume Mm3"
+        }
+      },
+      "required": [
+        "max_von_mises_mpa",
+        "max_displacement_mm",
+        "volume_mm3",
+        "mass_g"
+      ],
+      "title": "Metrics",
+      "type": "object"
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/ControllerDecision"
+    },
+    {
+      "$ref": "#/$defs/IterationManifest"
+    },
+    {
+      "$ref": "#/$defs/ClosedLoopResult"
+    }
+  ]
+}

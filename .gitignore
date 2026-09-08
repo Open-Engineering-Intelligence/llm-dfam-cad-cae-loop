@@ -16,6 +16,7 @@ outputs/mesh/*
 outputs/fea/*
 outputs/figures/*
 outputs/logs/*
+outputs/closed_loop/*
 !outputs/**/.gitkeep
 
 # CAD/CAE generated artifacts
