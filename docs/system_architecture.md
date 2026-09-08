@@ -1,8 +1,9 @@
 # System Architecture
 
 The architecture is backend-agnostic. FreeCAD, Gmsh, and CalculiX are the first
-adapters, not permanent assumptions. Issue #6 composes their existing contracts;
-it does not change backend configuration.
+adapters, not permanent assumptions. The internal Issue #6 milestone, tracked by
+GitHub Issue #7 rather than the unrelated GitHub Issue #6, composes their existing
+contracts; it does not change backend configuration.
 
 ```mermaid
 flowchart LR
@@ -28,7 +29,7 @@ flowchart LR
 
 The LLM proposes strict structured design parameters. Deterministic adapters generate CAD, mesh the model, run simulation, validate manufacturability, and compute evaluation records. LLM-generated arbitrary Python CAD code is outside the first-phase core workflow.
 
-Issue #6 exercises the same separation without an LLM. Its
+The internal Issue #6 milestone exercises the same separation without an LLM. Its
 `thickness_descent_v1` controller proposes a frozen sequence, while a structural
 evaluator resolves candidate-specific analysis, runs the adapters, checks exact
 inclusive constraints, and records provenance. DfAM remains `not_evaluated`, so
@@ -45,7 +46,7 @@ this integration slice does not complete the full flow or Gate 3.
 - `ManufacturabilityValidator` checks DfAM constraints.
 - `Evaluation` combines outcomes into an iteration record.
 
-## Issue #6 closed-loop contracts
+## Internal Issue #6 milestone closed-loop contracts
 
 - Closed-loop contracts represent trial status, iteration outcomes, structural
   feasibility, stopping reason, best candidate, and provenance failures.

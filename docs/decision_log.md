@@ -121,7 +121,10 @@ This log records research and architecture decisions that affect reproducibility
 - Alternatives considered: Keeping 20 evaluations, freezing repeated-trial count now, or making the budget method-specific.
 - Revisit condition: Gate 2 runtime measurements may require adjusting the budget before Gate 6, with the change documented as an amendment.
 
-## 2026-09-08 - Use a frozen thickness-descent policy for Issue #6
+## 2026-09-08 - Use a frozen thickness-descent policy for internal Issue #6
+
+This historical internal research milestone corresponds to GitHub Issue #7,
+"Implement deterministic closed-loop parameter update." It is not GitHub Issue #6.
 
 - Decision: The first closed-loop integration uses `thickness_descent_v1`, starting
   at `(thickness, width, rib height, fillet) = (8, 50, 18, 2) mm`, decreasing
@@ -141,8 +144,8 @@ This log records research and architecture decisions that affect reproducibility
 - Scope: DfAM remains `not_evaluated`, full benchmark feasibility remains `null`,
   and Gate 3 is incomplete. Mass reduction is a separate hypothesis from software
   correctness, but positive reduction in every accepted trial is required for
-  Issue #6 milestone PASS. No result is claimed before accepted retained evidence
-  exists.
+  internal Issue #6 milestone PASS. No result is claimed before accepted retained
+  evidence exists.
 - Alternatives considered: adding an LLM, an advanced optimizer, DfAM scoring, or
   a mesh-convergence study to the first loop integration.
 - Revisit condition: Do not tune this policy from observed results. Compare later

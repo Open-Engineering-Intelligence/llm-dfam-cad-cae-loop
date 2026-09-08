@@ -28,10 +28,13 @@ DesignParameters -> FreeCAD -> CAD artifacts/manifest (STEP for meshing)
 
 The PR #36 baseline (merge `4109c991e3eac4315781cc2fb15001b56f165962`)
 implements CAD generation/export, Gmsh meshing, CalculiX static analysis, parsed
-physics results, and provenance. Gate 2 is complete. Issue #6 is the approved
-structural-only deterministic closed-loop task; DfAM remains unevaluated and
-Gate 3 remains incomplete. The roadmap describes dependencies, not authorization
-to start later issues.
+physics results, and provenance. Gate 2 is complete. PR #37 (reviewed commit
+`bf7bd84052183476835001cdfd1019d325a07c42`, merge
+`33cd79f430571d05fa1469c7ab474126a4e899af`) implements the structural-only
+deterministic closed loop tracked by GitHub Issue #7. Historical internal
+research documents call this milestone "Issue #6"; GitHub Issue #6 is a
+different task. DfAM remains unevaluated and Gate 3 remains incomplete. The
+roadmap describes dependencies, not authorization to start later issues.
 
 ## Scope and Invariants
 

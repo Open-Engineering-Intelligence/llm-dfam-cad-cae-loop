@@ -1,11 +1,16 @@
-# Issue #6: Deterministic Structural Closed Loop
+# Internal milestone Issue #6: Deterministic Structural Closed Loop
 
 ## Scope and status
 
-Issue #6 adds the first deterministic, non-LLM closed loop on top of the merged
-Issue #5 CalculiX pipeline. The approved policy is `thickness_descent_v1`. It is
-a structural-only integration benchmark: DfAM is recorded as `not_evaluated`,
-`full_benchmark_feasible` is `null`, and Gate 3 remains incomplete.
+This document retains the historical internal research milestone label
+"Issue #6." The matching GitHub tracker item was Issue #7, "Implement
+deterministic closed-loop parameter update"; GitHub Issue #6 is a separate task.
+
+The internal Issue #6 milestone implements the first deterministic, non-LLM
+closed loop on top of the merged Issue #5 CalculiX pipeline. The approved policy
+is `thickness_descent_v1`. It is a structural-only integration benchmark: DfAM
+is recorded as `not_evaluated`, `full_benchmark_feasible` is `null`, and Gate 3
+remains incomplete.
 
 The geometry, material, load, structural limits, and 30-evaluation ceiling come
 from the frozen [Benchmark Bracket v1 specification](benchmark_bracket_v1.md)
@@ -70,7 +75,7 @@ behavior.
 
 ## Implementation shape
 
-The planned main units are new closed-loop contracts, a deterministic controller,
+The implemented main units are closed-loop contracts, a deterministic controller,
 a structural evaluator, and a runner/CLI under
 `open_engineering_intelligence.pipeline`. These compose the existing backends;
 they do not change backend configuration semantics. The evaluator returns
@@ -150,11 +155,11 @@ Software/run acceptance requires all trials to complete without backend or
 provenance errors, the verifier to accept the retained evidence, exact
 discrete-policy behavior, and repeatability under the rule above. Mass reduction
 remains a separate research hypothesis so it cannot be inferred from software
-correctness alone. Issue #6 milestone PASS additionally requires every trial to
-accept a candidate thinner than `8 mm` after at least two evaluations and to
-record a strictly positive mass reduction from the initial candidate. A null or
-negative result fails the milestone and must be reported without changing the
-policy or fabricating a successful result.
+correctness alone. Internal Issue #6 milestone PASS additionally requires every
+trial to accept a candidate thinner than `8 mm` after at least two evaluations
+and to record a strictly positive mass reduction from the initial candidate. A
+null or negative result fails the milestone and must be reported without changing
+the policy or fabricating a successful result.
 
 ## Scientific claim boundary
 
@@ -172,15 +177,16 @@ and that those retained results repeated within the declared identity and numeri
 rules on the tested environment. It can report the observed structural feasibility
 and mass change for these candidates.
 
-Issue #6 cannot establish full Benchmark v1 feasibility, DfAM validity, mesh
-convergence, printed-part performance, generalization beyond this bracket and
-environment, or superiority over an LLM or conventional optimizer. It also cannot
-turn software correctness alone into evidence that the mass-reduction hypothesis
-was supported; milestone PASS depends on the accepted observed results.
+The internal Issue #6 milestone cannot establish full Benchmark v1 feasibility,
+DfAM validity, mesh convergence, printed-part performance, generalization beyond
+this bracket and environment, or superiority over an LLM or conventional
+optimizer. It also cannot turn software correctness alone into evidence that the
+mass-reduction hypothesis was supported; milestone PASS depends on the accepted
+observed results.
 
 For a later fair comparison, retain the integer `thickness_mm` grid `4..14`, keep
 `width_mm = 50`, `rib_height_mm = 18`, and `fillet_radius_mm = 2`, preserve the
 30-evaluation ceiling, and report this policy's five-evaluation early-stopping
 consequence. Do not tune these controls from observed comparison results. LLM
 policies, advanced optimizers, DfAM evaluation, and mesh-convergence studies are
-outside Issue #6.
+outside the internal Issue #6 milestone.

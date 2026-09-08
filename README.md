@@ -52,8 +52,10 @@ not a replacement for deterministic CAD/CAE validation.
 
 ## Current Status
 
-At the deterministic static-FEA baseline merged by PR #36 (commit
-`4109c991e3eac4315781cc2fb15001b56f165962`):
+The deterministic structural closed loop was implemented by PR #37 (reviewed
+implementation commit `bf7bd84052183476835001cdfd1019d325a07c42`, merge commit
+`33cd79f430571d05fa1469c7ab474126a4e899af`) on top of the static-FEA baseline
+merged by PR #36 (commit `4109c991e3eac4315781cc2fb15001b56f165962`):
 
 - FreeCAD bracket generation produces a native document, STEP, STL, and a CAD
   manifest with geometry fingerprint and tessellation metadata.
@@ -63,9 +65,17 @@ At the deterministic static-FEA baseline merged by PR #36 (commit
   structured stress, displacement, reaction, artifact, and provenance records.
 - Integration tests cover the external CAD, mesh, and solver stages. Their
   presence is not a claim that they have passed in every environment.
-- Gate 2 is complete. The approved Issue #6 task is the structural-only
-  [`thickness_descent_v1` closed loop](docs/issue6_deterministic_closed_loop.md).
-  It does not evaluate DfAM, complete Gate 3, or establish experimental results.
+- Gate 2 and the structural-only
+  [`thickness_descent_v1` closed-loop milestone](docs/issue6_deterministic_closed_loop.md)
+  are complete. The closed loop provides single-trial, three-trial serial
+  experiment, and retained-evidence verification modes.
+- Historical internal research planning labels this closed-loop milestone
+  "Issue #6"; the matching GitHub tracker item is Issue #7, "Implement
+  deterministic closed-loop parameter update." GitHub Issue #6 is a separate,
+  unrelated task.
+- The structural-only milestone does not evaluate DfAM or complete Gate 3. DfAM
+  remains `not_evaluated`, and full benchmark feasibility remains `null`. This
+  status update makes no new experimental result claim.
 
 Historical note: the initial commit contained only contracts, configuration,
 documentation, and pure Python CI. That initialization-only status is superseded
@@ -97,11 +107,11 @@ External integration tests are separate: install with
 cause explicit skips; skips do not demonstrate backend success.
 See [agent routing and validation scope](AGENTS.md) for task-specific checks.
 
-Issue #6 will expose a single-trial command, a three-trial serial experiment, and
-a retained-evidence verifier through
+The closed-loop entry point exposes a single-trial command, a three-trial serial
+experiment, and a retained-evidence verifier through
 `py -3.12 -m open_engineering_intelligence.pipeline.closed_loop`. The contract,
-artifact layout, tolerances, and claim limits are documented before implementation
-in the linked Issue #6 document.
+artifact layout, tolerances, and claim limits are documented in the linked
+[internal milestone contract](docs/issue6_deterministic_closed_loop.md).
 
 ## Repository Structure
 
